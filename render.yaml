@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: keycorp-typing-practice
+    runtime: python
+    buildCommand: ""
+    startCommand: "python server.py"
+    envVars:
+      - key: PORT
+        value: 10000

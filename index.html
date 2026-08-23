@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professional Corporate & Technical Typing Practice & Spelling Mastery App. Improve your WPM, complete word retention, and sync daily sessions to Google Sheets.">
+  <title>KeyCorp - Corporate & Technical Typing Practice</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-logo">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>KeyCorp</h1>
+          <p>Corporate & Tech Typing Mastery</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div id="sheets-status-badge" class="sheets-badge unlinked" style="cursor: pointer;" title="Click to setup direct Google Sheets sync">
+          ○ Link Google Sheets
+        </div>
+
+        <button id="btn-sound-toggle" class="btn-icon" title="Toggle Sound (Mute/Unmute)">🔊</button>
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Dark/Light Mode">🌙</button>
+        <button id="btn-mistakes" class="btn-pill" title="Spelling Mistake Vault">🎯 Mistake Vault</button>
+        <button id="btn-history" class="btn-pill" title="Daily History & Analytics">📈 Daily Stats</button>
+        <button id="btn-settings" class="btn-icon" title="Settings & Google Sheets Sync">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Controls Bar -->
+    <nav class="control-bar" aria-label="Practice Controls">
+      <!-- Categories -->
+      <div class="control-group">
+        <span class="control-label">Vocabulary:</span>
+        <div class="toggle-group">
+          <button class="toggle-btn category-btn active" data-category="corporate">Corporate</button>
+          <button class="toggle-btn category-btn" data-category="technical">Technical</button>
+          <button class="toggle-btn category-btn" data-category="sentences">Emails & Sentences</button>
+          <button class="toggle-btn category-btn" data-category="tricky">Tricky Spellings</button>
+          <button class="toggle-btn category-btn" data-category="ai">Gemini AI</button>
+        </div>
+      </div>
+
+      <!-- Timers -->
+      <div class="control-group">
+        <span class="control-label">Duration:</span>
+        <div class="toggle-group">
+          <button class="toggle-btn timer-btn active" data-time="60">60s</button>
+          <button class="toggle-btn timer-btn" data-time="90">90s</button>
+          <button class="toggle-btn timer-btn" data-time="120">120s</button>
+          <button class="toggle-btn timer-btn" data-time="300">5 Mins</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Live Statistics Strip -->
+    <section class="stats-strip" aria-label="Live Session Metrics">
+      <div class="stat-box">
+        <div class="stat-label">Time Remaining</div>
+        <div id="stat-timer" class="stat-value">60s</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Net Speed (WPM)</div>
+        <div id="stat-wpm" class="stat-value highlight-wpm">0</div>
+        <div class="stat-sub">Words per min</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Accuracy</div>
+        <div id="stat-acc" class="stat-value highlight-acc">100%</div>
+        <div class="stat-sub">Spelling precision</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Mistakes</div>
+        <div id="stat-errors" class="stat-value" style="color: var(--error);">0</div>
+        <div class="stat-sub">Character errors</div>
+      </div>
+    </section>
+
+    <!-- Spelling Practice Hint Banner (Visible in Tricky / Drill Mode) -->
+    <div id="spelling-hint-bar" class="spelling-hint-bar hidden">
+      <div>
+        <span class="hint-badge">SPELLING FOCUS</span>
+        <span id="spelling-hint-text">Practice complete word spelling and corporate vocabulary.</span>
+      </div>
+    </div>
+
+    <!-- Main Typing Interactive Arena -->
+    <main class="typing-arena-card" id="typing-arena" tabindex="0">
+      <input type="text" id="hidden-input" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type here">
+      <div class="typing-text-wrapper" id="typing-text">
+        <!-- Rendered words will be injected here -->
+      </div>
+    </main>
+
+    <!-- Bottom Controls -->
+    <div class="bottom-controls">
+      <button id="btn-restart" class="btn-restart">
+        <span>🔄 Restart (Tab)</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Results Modal -->
+  <div id="results-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🎉 Session Completed!</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-card highlight">
+          <div id="res-wpm" class="res-num">0</div>
+          <div class="res-title">Net Speed (WPM)</div>
+        </div>
+        <div class="result-card">
+          <div id="res-accuracy" class="res-num">0%</div>
+          <div class="res-title">Accuracy</div>
+        </div>
+        <div class="result-card">
+          <div id="res-chars" class="res-num">0/0</div>
+          <div class="res-title">Correct / Total Characters</div>
+        </div>
+        <div class="result-card">
+          <div id="res-errors" class="res-num">0</div>
+          <div class="res-title">Errors</div>
+        </div>
+      </div>
+
+      <div id="res-mistakes-container" class="mistake-words-list" style="display: none;">
+        <h4>⚠️ Misspelled Words to Review</h4>
+        <div id="res-mistakes-list" class="word-tag-container"></div>
+      </div>
+
+      <div id="res-sync-status" class="sync-status-indicator">
+        <span>Google Sheets Sync:</span>
+        <span>Saved</span>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button id="btn-res-drill-mistakes" class="btn-pill primary" style="background: var(--warning); border: none;">🎯 Drill Mistakes</button>
+        <button id="btn-res-repeat" class="btn-pill primary">Next Practice ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily History Modal -->
+  <div id="history-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 750px;">
+      <div class="modal-header">
+        <h2>📊 Daily Practice History</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+        Your daily performance is saved here locally and automatically logged to your Google Sheet.
+      </p>
+
+      <div class="history-table-wrapper">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Sessions</th>
+              <th>Avg Speed</th>
+              <th>Avg Accuracy</th>
+              <th>Total Words</th>
+              <th>Mistake Words</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+        <div id="history-empty" style="text-align: center; padding: 2rem; color: var(--text-muted); display: none;">
+          No sessions recorded yet today. Complete your first test!
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+        <button id="btn-export-csv" class="btn-pill">📥 Export History to CSV</button>
+        <button class="btn-pill primary btn-close-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mistake Vault Modal -->
+  <div id="mistakes-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🎯 Spelling Mistake Vault</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        These are words you frequently misspell during your practice sessions. Practice them repeatedly to build muscle memory and correct spelling retention.
+      </p>
+
+      <div id="mistakes-vault-list" class="word-tag-container" style="min-height: 80px; margin-bottom: 1.5rem;">
+        <!-- Mistake badges -->
+      </div>
+      <div id="mistakes-vault-empty" style="text-align: center; color: var(--success); padding: 1.5rem; display: none;">
+        ✨ Great job! Your mistake vault is currently clean.
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <button id="btn-clear-vault" class="btn-pill" style="color: var(--error);">🗑️ Clear Vault</button>
+        <button id="btn-drill-vault" class="btn-pill primary">Practice These Words Now ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings & Google Sheets Setup Modal -->
+  <div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <h2>⚙️ Settings & Google Sheets Sync</h2>
+        <button class="btn-close-modal">&times;</button>
+      </div>
+
+      <!-- Google Sheets Webhook -->
+      <div class="form-group">
+        <label for="input-sheets-webhook">Google Apps Script Web App URL</label>
+        <input type="url" id="input-sheets-webhook" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+        <div class="form-hint">
+          Paste your deployed Google Apps Script Web App URL to stream session metrics directly to your Google Sheet: <a href="https://docs.google.com/spreadsheets/d/1ZLUe07NKydZqBLYgTKV9719qUCt23JPh9RN5Fa9-E_o/edit?usp=sharing" target="_blank" style="color: var(--accent-primary); text-decoration: underline;">Open Your Google Sheet ↗</a>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem;">
+        <button id="btn-test-sheets" class="btn-pill">🧪 Test & Send Sample Row to Sheet</button>
+      </div>
+
+      <!-- Quick Setup Instructions Accordion -->
+      <div style="background: var(--bg-surface); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <strong style="font-size: 0.9rem; color: var(--accent-primary);">📋 3-Step 1-Minute Setup Guide for Your Sheet</strong>
+          <button id="btn-copy-script" class="btn-pill" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">📋 Copy Script Code</button>
+        </div>
+        <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <ol style="padding-left: 1.25rem;">
+            <li>Open your spreadsheet: <a href="https://docs.google.com/spreadsheets/d/1ZLUe07NKydZqBLYgTKV9719qUCt23JPh9RN5Fa9-E_o/edit" target="_blank" style="color: var(--accent-primary); font-weight: 600;">Click here to open Sheet ↗</a></li>
+            <li>In the top menu, click <strong>Extensions ➔ Apps Script</strong>.</li>
+            <li>Delete any code in the editor, paste this exact snippet, and click <strong>Save (Ctrl+S)</strong>:</li>
+          </ol>
+          <div class="code-snippet" id="script-code-block">function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Date", "Time", "Category", "Mode", "Duration", "WPM", "Net WPM", "Accuracy", "Words Typed", "Errors", "Misspelled Words", "Session Paragraph"]);
+  }
+  sheet.appendRow([data.date, data.time, data.category, data.mode, data.duration, data.wpm, data.netWpm, data.accuracy, data.wordsTyped, data.errors, data.misspelledWords, data.sessionText]);
+  return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
+}</div>
+          <ol start="4" style="padding-left: 1.25rem; margin-top: 0.75rem;">
+            <li>Click <strong>Deploy (blue button at top right) ➔ New deployment</strong>.</li>
+            <li>Click the gear icon ⚙️ next to 'Select type' ➔ choose <strong>Web app</strong>.</li>
+            <li>Set <strong>Execute as: Me</strong> and <strong>Who has access: Anyone</strong>.</li>
+            <li>Click <strong>Deploy</strong> (grant access if prompted), then <strong>Copy the Web app URL</strong> and paste it into the field above!</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Gemini API Key -->
+      <div class="form-group">
+        <label for="input-gemini-key">Gemini API Key (Optional)</label>
+        <input type="password" id="input-gemini-key" class="form-control" placeholder="AIzaSy...">
+        <div class="form-hint">
+          Used to generate endless custom corporate scenarios and emails dynamically on demand. If left empty, the app uses built-in offline corporate datasets.
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn-pill btn-close-modal">Cancel</button>
+        <button id="btn-save-settings" class="btn-pill primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    KeyCorp Typing Practice &bull; Master Corporate Vocabulary, Spelling Retention & Typing Speed
+  </footer>
+
+  <!-- Scripts with cache busters -->
+  <script src="js/words.js?v=1.1"></script>
+  <script src="js/gemini.js?v=1.1"></script>
+  <script src="js/sheets.js?v=1.1"></script>
+  <script src="js/typing-engine.js?v=1.1"></script>
+  <script src="js/app.js?v=1.1"></script>
+</body>
+</html>

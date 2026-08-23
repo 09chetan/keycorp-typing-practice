@@ -1,0 +1,10 @@
+Date,Time,Category,Mode,Duration (sec),Net WPM,Raw WPM,Accuracy (%),Words Typed,Errors,Misspelled Words
+2026-08-23,22:08:00,CORPORATE,60s Test,60,48,52,96,48,3,"accommodate, concurrency"
+2026-08-23,10:18:10 PM,CORPORATE,60s Test,60,29,29,93,31,11,"comprehensive, competency, negotiation, contingency, prioritize"
+2026-08-23,10:25:25 PM,CORPORATE,60s Test,60,34,34,93,37,13,"implementation, empowerment, synergistic, stakeholder, strategic"
+2026-08-23,10:28:57 PM,CORPORATE,60s Test,60,23,23,86,27,22,"communication, stakeholder, prioritize, compliance, synchronize, scalability, diversification, alignment, consolidation"
+2026-08-23,10:33:58 PM,CORPORATE,60s Test,60,17,17,76,25,40,"stakeholder, competency, productivity, methodology, governance, diversification, compliance, streamline, initiative"
+2026-08-23,10:40:43 PM,CORPORATE,60s Test,60,28,28,93,30,12,"sustainability, initiative, contingency, optimization, synchronize",
+2026-08-23,10:44:55 PM,CORPORATE,60s Test,60,27,27,90,30,16,"synergistic, comprehensive, acknowledgement, comprehensive, collaborate, acknowledgement, acknowledgement, utilization",
+2026-08-23,22:46:00,CORPORATE,60s Test,60,35,35,95,35,5,"contingency, synergy","stakeholders, deliverables, bandwidth, feasibility, compliance, remuneration, contingency, synergy"
+2026-08-23,10:49:20 PM,CORPORATE,60s Test,60,28,28,91,31,15,"governance, stakeholder, procurement, competency, synergistic",
